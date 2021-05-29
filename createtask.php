@@ -4,25 +4,34 @@
     include('config.php');
     if (isset($_POST['createtask'])) {
         $name = $_POST['name'];
-        $due_date = $_POST['due_date'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
         $volanteer_id=$_SESSION['user_id'];
         $status=$_POST['status'];
         $description=$_POST['description'];
     
-        
-              $query = $connection->prepare("INSERT INTO task(name,due_date,volanteer_id,status,description) VALUES (:name,:due_date,:volanteer_id,:status,:description)");
-              $query->bindParam("name", $name, PDO::PARAM_STR);
-              $query->bindParam("due_date", $due_date, PDO::PARAM_STR);
-              $query->bindParam("volanteer_id", $volanteer_id, PDO::PARAM_STR);
-              $query->bindParam("status", $status, PDO::PARAM_STR);
-              $query->bindParam("description", $description, PDO::PARAM_STR);
-              $result = $query->execute();
-              if ($result) {
-                $_SESSION['message']=' <p class="success">Task Created successfully!</p>';
-                header('location: task.php ');
-              } else {
-                $message='<p class="error">Something went wrong!</p>';
-              }
+           if($end_date>$start_date){
+
+            $query = $connection->prepare("INSERT INTO task(name,start_date,end_date,volanteer_id,status,description) VALUES (:name,:start_date,:end_date,:volanteer_id,:status,:description)");
+            $query->bindParam("name", $name, PDO::PARAM_STR);
+            $query->bindParam("start_date", $start_date, PDO::PARAM_STR);
+            $query->bindParam("end_date", $end_date, PDO::PARAM_STR);
+            $query->bindParam("volanteer_id", $volanteer_id, PDO::PARAM_STR);
+            $query->bindParam("status", $status, PDO::PARAM_STR);
+            $query->bindParam("description", $description, PDO::PARAM_STR);
+            $result = $query->execute();
+            if ($result) {
+              $_SESSION['message']=' <p class="success">Task Created successfully!</p>';
+              header('location: task.php ');
+            } else {
+              $message='<p class="error">Something went wrong!</p>';
+            }
+
+           }
+           else{
+            $messag_date='<p class="error">Start Date must before End Date wrong!</p>';
+           }
+             
 
           }
         
@@ -97,22 +106,37 @@
      
       <form name="createtask" action="" method="post" class="">
                     <div class="form-group">
-                      <input type="name" name="name" class="form-control searchText" id="name" aria-describedby="" placeholder="Task name">
+                      <input type="name" name="name" class="form-control searchText" id="name" aria-describedby="" placeholder="Task name" require>
                       
                     </div>
                     
                     <div class="form-group">
-                      <input type="date" name="due_date" class="form-control searchText" id="due_date" aria-describedby="" placeholder="Due Date">
+                      <lable for="start_date"> Start Date</lable>
+                      <input type="date" name="start_date" class="form-control searchText" id="start_date" aria-describedby="" placeholder="Start Date" require>
                       
                     </div>
+
                     <div class="form-group">
-                      <input type="text" name="description" class="form-control searchText" id="description" aria-describedby="" placeholder="Description">
+                      <lable for="end_date"> End Date</lable>
+                      <input type="date" name="end_date" class="form-control searchText" id="end_date" aria-describedby="" placeholder="End Date" require>
+                      
+                    </div>
+
+                    <?php 
+                    if(isset($messag_date))
+                    {
+                      echo($messag_date);
+                    }
+                    ?>
+
+                    <div class="form-group">
+                      <input type="text" name="description" class="form-control searchText" id="description" aria-describedby="" placeholder="Description" require>
                       
                     </div>
 
                     <div class="form-group row ">
                         <div class="col-sm-4 offset-sm-4" >
-                             <input id="still" type="radio" name="status" value="still"> <lable  for="still" style="padding-right:15px;">Still</lable>
+                             <input id="still" type="radio" name="status" value="still" checked> <lable  for="still" style="padding-right:15px;">Still</lable>
                              <input id="done" type="radio" name="status" value="done"> <lable for="done">Done</lable>
                         </div>
                     

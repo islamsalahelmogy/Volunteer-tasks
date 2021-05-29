@@ -1,3 +1,7 @@
+<?php 
+ include('config.php');
+ session_start();
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -72,8 +76,8 @@
       <?php
       
      
-        include('config.php');
-        session_start();
+        //include('config.php');
+       // session_start();
       $sql = "SELECT * FROM task";
                     if($result = $connection->query($sql)){
                      // var_dump($result->fetch());
@@ -84,14 +88,22 @@
                                   echo'<div class="card my-3 ml-3">';
                                   echo '<div class="card-header">'. $row['name'].'</div>';
                                    echo'<div class="card-body">';
-                                    echo' <h5 class="card-title">'.$row['name'].'</h5><div class="my-3">Due to  :  '. $row['due_date'].'</div>';
+                                    echo' <h5 class="card-title">'.$row['name'].'</h5><div class="my-3"> Start Date :  '. date("D d-M-Y",strtotime($row['start_date'])).'<br> End Date  :  '. date("D d-M-Y",strtotime($row['end_date'])).'</div>';
+                                    
                                       echo '<p class="card-text">'.$row['description'].'</p>';
+                                      if($row['status']=='still'){
+                                        echo '<a class="btn btn-danger">'.$row['status'].'</a>';
+                                      }
+                                      else{
+                                        echo '<a class="btn btn-success">'.$row['status'].'</a>';
+                                      }
+                                      
                                       echo'</div>';
                               
                                       echo'<div class="card-footer">';
                                       if($row['volanteer_id']==$_SESSION['user_id'])
                                       {
-                                        echo '<a class="btn btn-success mr-2" href="updatetask.php?'.$row['id'].'" id='.$row['id'].' ><i class="fa fa-edit mr-1"></i>Update</a>';
+                                        echo '<a class="btn btn-primary mr-2" href="updatetask.php?'.$row['id'].'" id='.$row['id'].' ><i class="fa fa-edit mr-1"></i>Update</a>';
                                         echo'<a class="btn btn-danger" href="deletetask.php?'.$row['id'].'" id='.$row['id'].' ><i class="fa fa-close mr-1"></i>Delete</a>';
                                       }
                                       

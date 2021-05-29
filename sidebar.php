@@ -1,3 +1,21 @@
+ <?php 
+  /*
+   //session_start();
+
+   $user_id=$_SESSION['user_id'];
+   $sqlquery = "SELECT * FROM volunteer WHERE id=:user_id";
+   $results = $connection->query($sqlquery);
+
+    if($results->rowCount() > 0){
+      $row = $result->fetch((PDO::FETCH_ASSOC));
+      die("sss");
+    
+  }
+*/
+
+?> 
+
+
 <nav id="sidebarMenu" class=" d-md-block bg-light sidebar collapse" style=" width: 224.83px;">
         <div class="position-sticky pt-3">
           <ul class="nav flex-column ">

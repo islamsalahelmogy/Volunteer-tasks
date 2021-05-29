@@ -4,16 +4,18 @@
     include('config.php');
     if (isset($_POST['updatetask'])) {
         $name = $_POST['name'];
-        $due_date = $_POST['due_date'];
+        $start_date = $_POST['start_date'];
+        $end_date = $_POST['end_date'];
         $status=$_POST['status'];
         $description=$_POST['description'];
         $task_id=$_SERVER['QUERY_STRING'];
         
-        
-              $query = $connection->prepare("UPDATE task SET name=:name, due_date=:due_date, status=:status
+          if($end_date>$start_date){
+            $query = $connection->prepare("UPDATE task SET name=:name,start_date=:start_date, end_date=:end_date, status=:status
                ,description=:description WHERE id=:task_id");
               $query->bindParam(":name", $name, PDO::PARAM_STR);
-              $query->bindParam(":due_date", $due_date, PDO::PARAM_STR);
+              $query->bindParam(":start_date", $start_date, PDO::PARAM_STR);
+              $query->bindParam(":end_date", $end_date, PDO::PARAM_STR);
               $query->bindParam(":status", $status, PDO::PARAM_STR);
               $query->bindParam(":description", $description, PDO::PARAM_STR);
               $query->bindParam(":task_id", $task_id, PDO::PARAM_INT);
@@ -24,6 +26,12 @@
               } else {
                 $message='<p class="error">Something went wrong!</p>';
               }
+
+          }
+          else{
+            $messag_date='<p class="error">Start Date must before End Date wrong!</p>';
+          }
+              
 
           }
         
@@ -98,14 +106,28 @@
      
       <form name="createtask" action="" method="post" class="">
                     <div class="form-group">
-                      <input type="name" name="name" class="form-control searchText" id="name" aria-describedby="" placeholder="Task name">
+                      <input type="name" name="name" class="form-control searchText" id="name" aria-describedby="" placeholder="Task name" require>
                       
                     </div>
                     
                     <div class="form-group">
-                      <input type="date" name="due_date" class="form-control searchText" id="due_date" aria-describedby="" placeholder="Due Date">
+                      <lable for="start_date"> Start Date</lable>
+                      <input type="date" name="start_date" class="form-control searchText" id="start_date" aria-describedby="" placeholder="Start Date" require>
                       
                     </div>
+
+                    <div class="form-group">
+                      <lable for="end_date"> End Date</lable>
+                      <input type="date" name="end_date" class="form-control searchText" id="end_date" aria-describedby="" placeholder="End Date" require>
+                      
+                    </div>
+
+                    <?php 
+                    if(isset($messag_date))
+                    {
+                      echo($messag_date);
+                    }
+                    ?>
                     <div class="form-group">
                       <input type="text" name="description" class="form-control searchText" id="description" aria-describedby="" placeholder="Description">
                       
@@ -113,8 +135,8 @@
 
                     <div class="form-group row ">
                         <div class="col-sm-4 offset-sm-4" >
-                             <input id="still" type="radio" name="status" value="still"> <lable  for="still" style="padding-right:15px;">Still</lable>
-                             <input id="done" type="radio" name="status" value="done"> <lable for="done">Done</lable>
+                             <input id="still" type="radio" name="status" value="still" > <lable  for="still" style="padding-right:15px;">Still</lable>
+                             <input id="done" type="radio" name="status" value="done" checked> <lable for="done">Done</lable>
                         </div>
                     
                     </div>
