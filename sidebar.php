@@ -1,17 +1,20 @@
  <?php 
-  /*
+  
    //session_start();
 
    $user_id=$_SESSION['user_id'];
-   $sqlquery = "SELECT * FROM volunteer WHERE id=:user_id";
+   $sqlquery = "SELECT * FROM volunteer WHERE id=".$user_id;
    $results = $connection->query($sqlquery);
-
+   $data = [];
     if($results->rowCount() > 0){
-      $row = $result->fetch((PDO::FETCH_ASSOC));
-      die("sss");
+      while( $row = $results->fetch())
+      {
+          array_push($data,$row['name']);
+          array_push($data,$row['email']);
+      } 
     
   }
-*/
+
 
 ?> 
 
@@ -23,8 +26,8 @@
               <a class="nav-link ">
   
               <img src="assets/images/Asset 1@2x-50.jpg" width="80px" height="80px" style="border:1px solid black; display: block;" class="rounded-circle mx-auto">
-              <div class="name text-center" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">John Doe</div>
-              <div class="email text-center">john.doe@example.com</div>
+              <div class="name text-center" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php echo $data[0]; ?></div>
+              <div class="email text-center"><?php echo $data[1]; ?></div>
   
               </a>
     
