@@ -1,6 +1,15 @@
 <?php 
  include('config.php');
  session_start();
+ $sqlquery = "SELECT task.* , volunteer.name as v_name FROM task , volunteer where task.volanteer_id = volunteer.id";
+   $results = $connection->query($sqlquery);
+   $tasks = [];
+    if($results->rowCount() > 0){
+      while( $row = $results->fetch(PDO::FETCH_ASSOC))
+      {
+		array_push($tasks,$row);
+      } 
+	}
 ?>
 <!doctype html>
 <html lang="en">
@@ -19,168 +28,8 @@
     <!-- Bootstrap core CSS -->
 <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i" rel="stylesheet">
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
 
 
-<script>
-
-	$(document).ready(function() {
-	    var date = new Date();
-		var d = date.getDate();
-		var m = date.getMonth();
-		var y = date.getFullYear();
-		
-		/*  className colors
-		
-		className: default(transparent), important(red), chill(pink), success(green), info(blue)
-		
-		*/		
-		
-		  
-		/* initialize the external events
-		-----------------------------------------------------------------*/
-	
-		$('#external-events div.external-event').each(function() {
-		
-			// create an Event Object (http://arshaw.com/fullcalendar/docs/event_data/Event_Object/)
-			// it doesn't need to have a start or end
-			var eventObject = {
-				title: $.trim($(this).text()) // use the element's text as the event title
-			};
-			
-			// store the Event Object in the DOM element so we can get to it later
-			$(this).data('eventObject', eventObject);
-			
-			// make the event draggable using jQuery UI
-			$(this).draggable({
-				zIndex: 999,
-				revert: true,      // will cause the event to go back to its
-				revertDuration: 0  //  original position after the drag
-			});
-			
-		});
-	
-	
-		/* initialize the calendar
-		-----------------------------------------------------------------*/
-		
-		var calendar =  $('#calendar').fullCalendar({
-			header: {
-				left: 'title',
-				center: 'agendaDay,agendaWeek,month',
-				right: 'prev,next today'
-			},
-			editable: true,
-			firstDay: 1, //  1(Monday) this can be changed to 0(Sunday) for the USA system
-			selectable: true,
-			defaultView: 'month',
-			
-			axisFormat: 'h:mm',
-			columnFormat: {
-                month: 'ddd',    // Mon
-                week: 'ddd d', // Mon 7
-                day: 'dddd M/d',  // Monday 9/7
-                agendaDay: 'dddd d'
-            },
-            titleFormat: {
-                month: 'MMMM yyyy', // September 2009
-                week: "MMMM yyyy", // September 2009
-                day: 'MMMM yyyy'                  // Tuesday, Sep 8, 2009
-            },
-			allDaySlot: false,
-			selectHelper: true,
-			select: function(start, end, allDay) {
-				var title = prompt('Event Title:');
-				if (title) {
-					calendar.fullCalendar('renderEvent',
-						{
-							title: title,
-							start: start,
-							end: end,
-							allDay: allDay
-						},
-						true // make the event "stick"
-					);
-				}
-				calendar.fullCalendar('unselect');
-			},
-			droppable: true, // this allows things to be dropped onto the calendar !!!
-			drop: function(date, allDay) { // this function is called when something is dropped
-			
-				// retrieve the dropped element's stored Event Object
-				var originalEventObject = $(this).data('eventObject');
-				
-				// we need to copy it, so that multiple events don't have a reference to the same object
-				var copiedEventObject = $.extend({}, originalEventObject);
-				
-				// assign it the date that was reported
-				copiedEventObject.start = date;
-				copiedEventObject.allDay = allDay;
-				
-				// render the event on the calendar
-				// the last `true` argument determines if the event "sticks" (http://arshaw.com/fullcalendar/docs/event_rendering/renderEvent/)
-				$('#calendar').fullCalendar('renderEvent', copiedEventObject, true);
-				
-				// is the "remove after drop" checkbox checked?
-				if ($('#drop-remove').is(':checked')) {
-					// if so, remove the element from the "Draggable Events" list
-					$(this).remove();
-				}
-				
-			},
-			
-			events: [
-				{
-					title: 'All Day Event',
-					start: new Date(y, m, 1)
-				},
-				{
-					id: 999,
-					title: 'Repeating Event sss',
-					start: new Date(y, m, d-3, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					id: 999,
-					title: 'Repeating Event',
-					start: new Date(y, m, d+4, 16, 0),
-					allDay: false,
-					className: 'info'
-				},
-				{
-					title: 'Meeting',
-					start: new Date(y, m, d, 10, 30),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'Lunch',
-					start: new Date(y, m, d, 12, 0),
-					end: new Date(y, m, d, 14, 0),
-					allDay: false,
-					className: 'important'
-				},
-				{
-					title: 'task2 event ',
-					start: new Date(y, m, d+1, 19, 0),
-					end: new Date(y, m, d+1, 22, 30),
-					allDay: false,
-				},
-				{
-					title: 'John.doe task',
-					start: new Date(y, m, 28),
-					end: new Date(y, m, 29),
-					url: '#',
-					className: 'success'
-				}
-			],			
-		});
-		
-		
-	});
-
-</script>
 
     <style>
       .bd-placeholder-img {
@@ -199,68 +48,18 @@
 
 
 
-
-
       /* for calender */
 
-
-      body {
-	    margin-bottom: 40px;
-		
-		text-align: center;
-		font-size: 14px;
-		font-family: 'Roboto', sans-serif;
-		background:url(http://www.digiphotohub.com/wp-content/uploads/2015/09/bigstock-Abstract-Blurred-Background-Of-92820527.jpg);
+		.monthly {
+			box-shadow: 0 13px 40px rgba(0, 0, 0, 0.5);
+			font-size: 1em;
 		}
 		
-	#wrap {
-		width: 1100px;
-		margin: 0 auto;
+		.border-left-5 , .monthly-list-item:after {
+			border-left: 5px solid;
 		}
-		
-	#external-events {
-		float: left;
-		width: 150px;
-		padding: 0 10px;
-		text-align: left;
-		}
-		
-	#external-events h4 {
-		font-size: 16px;
-		margin-top: 0;
-		padding-top: 1em;
-		}
-		
-	.external-event { /* try to mimick the look of a real event */
-		margin: 10px 0;
-		padding: 2px 4px;
-		background: #3366CC;
-		color: #fff;
-		font-size: .85em;
-		cursor: pointer;
-		}
-		
-	#external-events p {
-		margin: 1.5em 0;
-		font-size: 11px;
-		color: #666;
-		}
-		
-	#external-events p input {
-		margin: 0;
-		vertical-align: middle;
-		}
-
-	#calendar {
-/* 		float: right; */
-        margin: 0 auto;
-		width: 900px;
-		background-color: #FFFFFF;
-		  border-radius: 6px;
-        box-shadow: 0 1px 2px #C3C3C3;
-		-webkit-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
--moz-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
-box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
+		 .monthly-list-item:after {
+			text-align: center;
 		}
     </style>
 
@@ -289,26 +88,146 @@ box-shadow: 0px 0px 21px 2px rgba(0,0,0,0.18);
       ?>
     </div>
     
-    <div class="col-md-9 col-lg-10">
+    <div class="col-md-9 col-lg-10 row p-0 m-0">
 
-        <div id='wrap'>
-
-
-            <div id='calendar'></div>
-            
-            <div style='clear:both'></div>
-
-
-    </div>
+        <div class="d-inline-block col-lg-10 offset-lg-1 px-md-5 py-5">
+			<div class="monthly" id="mycalendar"></div>
+		</div>
     
-  </div>
+	</div>
 
   
 
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script type="text/javascript" src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="assets/js/calender.js"></script>
+	<script>
+		var sampleEvents = {
+			"monthly": [
+				{
+				"id": 1,
+				"name": "Whole month event",
+				"startdate": "2021-4-01",
+				"enddate": "2021-4-12",
+				"starttime": "12:00",
+				"endtime": "2:00",
+				"color": "#99CCCC",
+				"url": ""
+				},
+				{
+				"id": 2,
+				"name": "Test encompasses month",
+				"startdate": "2021-4-4",
+				"enddate": "2021-4-15",
+				"starttime": "12:00",
+				"endtime": "2:00",
+				"color": "#CC99CC",
+				"url": ""
+				},
+				{
+				"id": 3,
+				"name": "Test single day",
+				"startdate": "2021-4-17",
+				"enddate": "",
+				"starttime": "",
+				"endtime": "",
+				"color": "#666699",
+				"url": "https://www.google.com/"
+				},
+				{
+				"id": 8,
+				"name": "Test single day",
+				"startdate": "2021-5-05",
+				"enddate": "",
+				"starttime": "12:00",
+				"endtime": "5:00",
+				"color": "#666699",
+				"url": "https://www.google.com/"
+				},
+				{
+				"id": 4,
+				"name": "Test single day with time",
+				"startdate": "2021-5-07",
+				"enddate": "",
+				"starttime": "12:00",
+				"endtime": "02:00",
+				"color": "#996666",
+				"url": ""
+				},
+				{
+				"id": 5,
+				"name": "Test splits month",
+				"startdate": "2021-4-30",
+				"enddate": "2021-5-6",
+				"starttime": "12:00",
+				"endtime": "5:00",
+				"color": "#999999",
+				"url": ""
+				},
+				{
+				"id": 6,
+				"name": "Test events on same day",
+				"startdate": "2021-5-25",
+				"enddate": "",
+				"starttime": "",
+				"endtime": "",
+				"color": "#99CC99",
+				"url": ""
+				},
+				{
+				"id": 7,
+				"name": "Test events on same day",
+				"startdate": "2021-5-27",
+				"enddate": "2021-5-30",
+				"starttime": "",
+				"endtime": "",
+				"color": "#669966",
+				"url": ""
+				},
+				{
+				"id": 9,
+				"name": "Test events on same day",
+				"startdate": "2021-5-28",
+				"enddate": "",
+				"starttime": "",
+				"endtime": "",
+				"color": "#999966",
+				"url": ""
+				}
+			]
+		};
+		console.log(sampleEvents.monthly);
+		var events = {"monthly":[]};
+		
+		var list = <?php echo json_encode($tasks) ?> ;
+		for(l of list) {
+			if(l.status == "still"){
+			l['color'] = "#df4759"
+			} else {
+				l["color"] = "#2d9d7b"
+			}
+			events.monthly.push(l);
+			
+		} 
+		console.log(events.monthly);
+		$(window).load( function() {
+			
+			
+			$('#mycalendar').monthly({
+				mode: 'event',
+				dataType: 'json',
+				events: events
+			});
+			// $(".monthly-event-indicator").on("click",(e) => {
+			// 	console.log(e.currentTarget);
+			// });
 
-      <script src="https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js" integrity="sha384-uO3SXW5IuS1ZpFPKugNNWqTZRRglnUJK6UAZ/gxOX80nxEkN9NcGZTftn6RzhGWE" crossorigin="anonymous"></script><script src="assets/js/dashboard.js"></script>
+		});
+
+	</script>
+
+<!-- <script src="assets/js/dashboard.js"></script> -->
   </body>
 </html>
